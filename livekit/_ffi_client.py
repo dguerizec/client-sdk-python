@@ -21,6 +21,12 @@ else:
 
 libpath = pkg_resources.resource_filename('livekit', lib_path + '/' + lib_file)
 
+import os as _os
+if _os.environ.get('FFI_LIB', ''):
+    libpath = _os.environ.get('FFI_LIB')
+
+print(f"Using FFI_LIB: {libpath}")
+
 ffi_lib = CDLL(libpath)
 
 # C function types
