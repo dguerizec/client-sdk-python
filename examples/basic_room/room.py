@@ -48,10 +48,31 @@ async def main():
     def on_track_unpublished(publication: livekit.LocalTrackPublication, participant: livekit.RemoteParticipant):
         logging.info("track unpublished: %s", publication.sid)
 
+    @room.on("participant_disconnected")
+    def on_participant_disconnected(participant: livekit.Participant):
+        print(f"DEBUG: on_participant_disconnected {participant}")
+
+    @room.on("participant_connected")
+    def on_participant_connected(participant: livekit.Participant):
+        print(f"DEBUG: on_participant_connected {participant}")
+
+    @room.on("track_unsubscribed")
+    def on_track_unsubscribed(track: livekit.Track, publication: livekit.RemoteTrackPublication, participant: livekit.RemoteParticipant):
+        print(f"DEBUG: on_track_unsubscribed {track} {publication} {participant}")
+
+    @room.on("track_unpublished")
+    def on_track_unpublished(publication: livekit.LocalTrackPublication, participant: livekit.LocalParticipant):
+        print(f"DEBUG: on_track_unpublished {publication} {participant}")
+
+    @room.on("track_published")
+    def on_track_published(publication: livekit.LocalTrackPublication, participant: livekit.LocalParticipant):
+        print(f"DEBUG: on_track_published {publication} {participant}")
+
     @room.on("track_subscribed")
     def on_track_subscribed(track: livekit.Track, publication: livekit.RemoteTrackPublication, participant: livekit.RemoteParticipant):
         logging.info("track subscribed: %s", publication.sid)
-        start_time = time.time()
+        print(f"DEBUG: on_track_unsubscribed {track} {publication} {participant}")
+        start_time = 0 # time.time()
         print(f"DEBUG: on_track_subscribed received track subscription {track.kind}")
         if track.kind == livekit.TrackKind.KIND_VIDEO:
             nonlocal video_stream
@@ -65,18 +86,16 @@ async def main():
                 nonlocal frame_num
                 nonlocal start_time
                 # only write a frame every 2 seconds
-                if time.time() - start_time < 2:
+                if time.time() - start_time < 10:
                     return
                 start_time = time.time()
                 print(f"DEBUG: on_video_frame received video frame on {track.sid} {frame.buffer}")
 
                 size = frame.buffer.width * frame.buffer.height
                 yuv = frame.buffer.to_i420()
-                print(f"DEBUG: on_video_frame INFO: chroma:{yuv.chroma_width}x{yuv.chroma_height} size: {size}/{yuv.width*yuv.height} ({yuv.width}x{yuv.height}) strides: {yuv.stride_y}/{yuv.stride_u}/{yuv.stride_v}")
 
                 argb_frame = ArgbFrame(format=FORMAT_ARGB, width=frame.buffer.width, height=frame.buffer.height)
                 frame.buffer.to_argb(argb_frame)
-                print(f"DEBUG: on_video_frame argb_frame: {argb_frame.width}x{argb_frame.height} data: {argb_frame.data}")
 
                 image = np.array(argb_frame.data, dtype=np.uint8).reshape((argb_frame.height, argb_frame.width, 4))
                 # write image to file

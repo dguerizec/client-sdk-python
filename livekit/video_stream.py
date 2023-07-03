@@ -28,6 +28,7 @@ class VideoStream(AsyncIOEventEmitter):
     def _on_video_stream_event(cls, event: proto_video_frame.VideoStreamEvent):
         stream = cls._streams.get(event.handle.id)
         if stream is None:
+            print(f"DEBUG: Received video stream event for unknown stream {event.handle.id} which={event.WhichOneof('message')}")  # noqa: E501
             return
 
         stream = stream()
@@ -39,6 +40,7 @@ class VideoStream(AsyncIOEventEmitter):
             frame_info = event.frame_received.frame
             buffer_info = event.frame_received.buffer
             ffi_handle = FfiHandle(buffer_info.handle.id)
+            print(f"Received frame stream# {stream._ffi_handle.handle:016x} frame# {ffi_handle.handle:016x}")
 
             frame = VideoFrame(frame_info.timestamp_us, frame_info.rotation,
                                VideoFrameBuffer.create(ffi_handle, buffer_info))

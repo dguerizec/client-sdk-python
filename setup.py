@@ -29,7 +29,7 @@ setup(
     keywords="webrtc, livekit",
     packages=["livekit"],
     python_requires=">=3.7, <4",
-    install_requires=["pyee>=9.0.0"],
+    install_requires=["pyee>=9.0.0", "PyJWT"],
     package_data={
         "livekit": ['lib/*/*/*.*'],
     },
