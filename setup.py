@@ -44,7 +44,7 @@ setup(
     install_requires=["pyee>=11.0.0",
                       "protobuf>=3.1.0", "types-protobuf>=3.1.0"],
     package_data={
-        "livekit": ['lib/*/*/*.*', '_proto/*.py'],
+        "livekit": ['py.typed', 'lib/*/*/*.*', '_proto/*.py'],
     },
     project_urls={
         "Website": "https://livekit.io/",
